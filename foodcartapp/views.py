@@ -1,7 +1,8 @@
-import json
 from django.http import JsonResponse
 from django.templatetags.static import static
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 from .models import Product, Order, OrderItem
@@ -59,19 +60,20 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 @csrf_exempt
 def register_order(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            data = request.data
             order = Order.objects.create(
                 firstname=data['firstname'], lastname=data['lastname'], phonenumber=data['phonenumber'], address=data['address'])
             for item_data in data.get('products', []):
                 product = Product.objects.get(id=item_data['product'])
                 OrderItem.objects.create(
                     order=order, product=product, quantity=item_data['quantity'])
-            return JsonResponse({})
+            return Response({})
 
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-    return JsonResponse({"error": "Method not allowed"}, status=405)
+            return Response({"error": str(e)}, status=400)
+    return Response({"error": "Method not allowed"}, status=405)
