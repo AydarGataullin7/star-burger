@@ -3,6 +3,7 @@ from django.templatetags.static import static
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 
 from .models import Product, Order, OrderItem
@@ -63,17 +64,27 @@ def product_list_api(request):
 @api_view(['POST'])
 @csrf_exempt
 def register_order(request):
-    if request.method == 'POST':
-        try:
-            data = request.data
-            order = Order.objects.create(
-                firstname=data['firstname'], lastname=data['lastname'], phonenumber=data['phonenumber'], address=data['address'])
-            for item_data in data.get('products', []):
-                product = Product.objects.get(id=item_data['product'])
-                OrderItem.objects.create(
-                    order=order, product=product, quantity=item_data['quantity'])
-            return Response({})
+    try:
+        data = request.data
+        if 'products' not in data:
+            return Response({"error": "products: Обязательное поле."}, status=status.HTTP_400_BAD_REQUEST)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=400)
+        if data['products'] is None:
+            return Response({"error": "products: Это поле не может быть пустым."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not isinstance(data['products'], list):
+            return Response({"error": "products: Ожидался list со значениями, но был получен 'str'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(data['products']) == 0:
+            return Response({"error": "products: Этот список не может быть пустым."}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = Order.objects.create(
+            firstname=data['firstname'], lastname=data['lastname'], phonenumber=data['phonenumber'], address=data['address'])
+        for item_data in data.get('products', []):
+            product = Product.objects.get(id=item_data['product'])
+            OrderItem.objects.create(
+                order=order, product=product, quantity=item_data['quantity'])
+        return Response({})
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
     return Response({"error": "Method not allowed"}, status=405)
