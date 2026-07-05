@@ -1,13 +1,7 @@
-from django.http import JsonResponse
-from django.templatetags.static import static
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
-from phonenumber_field.phonenumber import PhoneNumber
-
-
-from .models import Product, Order, OrderItem
+from .serializer import OrderSerializer
 
 
 def banners_list_api(request):
@@ -65,70 +59,8 @@ def product_list_api(request):
 @api_view(['POST'])
 @csrf_exempt
 def register_order(request):
-    try:
-        data = request.data
-
-        if 'products' not in data:
-            return Response({"error": "products: Обязательное поле."}, status=status.HTTP_400_BAD_REQUEST)
-        if data['products'] is None:
-            return Response({"error": "products: Это поле не может быть пустым."}, status=status.HTTP_400_BAD_REQUEST)
-        if not isinstance(data['products'], list):
-            return Response({"error": "products: Ожидался list со значениями, но был получен 'str'."}, status=status.HTTP_400_BAD_REQUEST)
-        if len(data['products']) == 0:
-            return Response({"error": "products: Этот список не может быть пустым."}, status=status.HTTP_400_BAD_REQUEST)
-
-        required_fields = ['firstname', 'lastname', 'phonenumber', 'address']
-        missing_fields = [
-            field for field in required_fields if field not in data]
-        if missing_fields:
-            return Response({"error": f"{', '.join(missing_fields)}: Обязательное поле."}, status=status.HTTP_400_BAD_REQUEST)
-
-        for field in required_fields:
-            if data[field] is None:
-                return Response({"error": f"{field}: Это поле не может быть пустым."}, status=status.HTTP_400_BAD_REQUEST)
-            if not isinstance(data[field], str):
-                return Response({"error": f"{field}: Not a valid string."}, status=status.HTTP_400_BAD_REQUEST)
-            if data[field].strip() == '':
-                return Response({"error": f"{field}: Это поле не может быть пустым."}, status=status.HTTP_400_BAD_REQUEST)
-
-        from phonenumber_field.phonenumber import PhoneNumber
-        phone = data['phonenumber'].strip()
-        try:
-            parsed_phone = PhoneNumber.from_string(phone)
-            if not parsed_phone.is_valid():
-                raise ValueError("Invalid phone number")
-        except Exception:
-            return Response(
-                {"error": "phonenumber: Введен некорректный номер телефона."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        for item_data in data['products']:
-            try:
-                product = Product.objects.get(id=item_data['product'])
-            except Product.DoesNotExist:
-                return Response(
-                    {"error": f'products: Недопустимый первичный ключ "{item_data["product"]}"'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-        order = Order.objects.create(
-            firstname=data['firstname'].strip(),
-            lastname=data['lastname'].strip(),
-            phonenumber=phone,
-            address=data['address'].strip()
-        )
-
-        # Создание позиций заказа
-        for item_data in data['products']:
-            product = Product.objects.get(id=item_data['product'])
-            OrderItem.objects.create(
-                order=order,
-                product=product,
-                quantity=item_data.get('quantity', 1)
-            )
-
-        return Response({})
-
-    except Exception as e:
-        return Response({"error": str(e)}, status=400)
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    order = serializer.save()
+    print(f"✅ Заказ #{order.id} сохранён!")
+    return Response({})
