@@ -62,5 +62,4 @@ def register_order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     order = serializer.save()
-    print(f"✅ Заказ #{order.id} сохранён!")
-    return Response({})
+    return Response(serializer.data)
