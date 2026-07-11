@@ -134,6 +134,16 @@ class Order(models.Model):
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     called_at = models.DateTimeField('Дата звонка', blank=True, null=True)
     delivered_at = models.DateTimeField('Дата доставки', blank=True, null=True)
+    pay_choice = models.CharField(
+        max_length=20,
+        choices={
+            'cash': 'Наличными',
+            'card': 'Онлайн',
+        },
+        verbose_name='Способ оплаты',
+        default='card',
+        db_index=True
+    )
     status = models.CharField(
         max_length=20,
         choices={
@@ -147,6 +157,7 @@ class Order(models.Model):
         db_index=True,
         verbose_name='Статус'
     )
+
     comment = models.TextField(blank=True, null=True)
 
     class Meta:
