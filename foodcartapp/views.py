@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Product
 from .serializer import OrderSerializer
+from django.db import transaction
 
 
 def banners_list_api(request):
@@ -59,6 +60,7 @@ def product_list_api(request):
     })
 
 
+@transaction.atomic
 @api_view(['POST'])
 @csrf_exempt
 def register_order(request):
