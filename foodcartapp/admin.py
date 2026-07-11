@@ -120,7 +120,8 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ['created_at', 'status']
     search_fields = ['firstname', 'lastname', 'phonenumber']
     fields = ['status', 'firstname', 'lastname',
-              'phonenumber', 'address', 'comment']
+              'phonenumber', 'address', 'comment', 'created_at', 'called_at', 'delivered_at']
+    readonly_fields = ['created_at']
     inlines = [OrderItemInline]
 
     def response_change(self, request, obj):
