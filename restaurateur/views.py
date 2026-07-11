@@ -3,6 +3,8 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from django.conf import settings
+from star_burger.geocoding import fetch_coordinates, calculate_distance
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
@@ -47,7 +49,7 @@ class LoginView(View):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                if user.is_staff:  # FIXME replace with specific permission
+                if user.is_staff:
                     return redirect("restaurateur:RestaurantView")
                 return redirect("start_page")
 
@@ -62,7 +64,7 @@ class LogoutView(auth_views.LogoutView):
 
 
 def is_manager(user):
-    return user.is_staff  # FIXME replace with specific permission
+    return user.is_staff
 
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
@@ -96,25 +98,52 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.exclude(status='completed').annotate(total_price=Sum(
-        F('items__price')*F('items__quantity'))).prefetch_related('items__product')
+    orders = Order.objects.exclude(status='completed').annotate(
+        total_price=Sum(F('items__price')*F('items__quantity'))
+    ).prefetch_related('items__product')
 
     menu_items = RestaurantMenuItem.objects.filter(
-        availability=True).select_related('restaurant')
+        availability=True
+    ).select_related('restaurant')
 
-    restaurnant_products = {}
+    restaurant_products = {}
     for item in menu_items:
-        if item.restaurant.id not in restaurnant_products:
-            restaurnant_products[item.restaurant.id] = set()
-        restaurnant_products[item.restaurant.id].add(item.product_id)
+        if item.restaurant.id not in restaurant_products:
+            restaurant_products[item.restaurant.id] = set()
+        restaurant_products[item.restaurant.id].add(item.product_id)
 
     for order in orders:
         order_products = set(order.items.values_list('product_id', flat=True))
-        available_restaurants = []
 
-        for restaurant_id, products in restaurnant_products.items():
+        order_coords = None
+        try:
+            order_coords = fetch_coordinates(order.address)
+        except Exception:
+            pass
+
+        available_restaurants = []
+        for restaurant_id, products in restaurant_products.items():
             if order_products.issubset(products):
                 restaurant = Restaurant.objects.get(id=restaurant_id)
+
+                if order_coords and restaurant.latitude and restaurant.longitude:
+                    restaurant_coords = (
+                        float(restaurant.longitude),
+                        float(restaurant.latitude)
+                    )
+                    distance = calculate_distance(
+                        order_coords, restaurant_coords)
+                    restaurant.distance_from_order = distance
+                else:
+                    restaurant.distance_from_order = None
+
                 available_restaurants.append(restaurant)
+
+        available_restaurants.sort(
+            key=lambda r: r.distance_from_order if r.distance_from_order is not None else float(
+                'inf')
+        )
+
         order.available_restaurants = available_restaurants
+
     return render(request, template_name='order_items.html', context={'orders': orders})
