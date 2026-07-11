@@ -133,7 +133,7 @@ class Order(models.Model):
     address = models.CharField('Адрес', max_length=200)
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
     called_at = models.DateTimeField('Дата звонка', blank=True, null=True)
-    delivered_at = models.DateTimeField('Дата достваки', blank=True, null=True)
+    delivered_at = models.DateTimeField('Дата доставки', blank=True, null=True)
     status = models.CharField(
         max_length=20,
         choices={
