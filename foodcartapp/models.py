@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
+from django.core.validators import MinValueValidator
 
 
 class Restaurant(models.Model):
@@ -146,6 +147,8 @@ class OrderItem(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='order_items', verbose_name='Товар')
     quantity = models.PositiveIntegerField('Количество', default=1)
+    price = models.DecimalField(
+        max_digits=8, decimal_places=2, verbose_name='Стоимость', validators=[MinValueValidator(0)])
 
     class Meta:
         verbose_name = 'Позиция заказа'
