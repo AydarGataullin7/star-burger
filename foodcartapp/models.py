@@ -159,6 +159,13 @@ class Order(models.Model):
     )
 
     comment = models.TextField(blank=True, null=True)
+    restaurant = models.ForeignKey(
+        'Restaurant',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Ресторан'
+    )
 
     class Meta:
         verbose_name = 'Заказ'
@@ -167,6 +174,11 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Заказ #{self.id} от {self.firstname} {self.lastname}'
+
+    def save(self, *args, **kwargs):
+        if self.restaurant and self.status == 'created':
+            self.status = 'cooking'
+        super().save(*args, **kwargs)
 
 
 class OrderItem(models.Model):

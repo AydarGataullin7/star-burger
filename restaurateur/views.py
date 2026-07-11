@@ -9,7 +9,8 @@ from django.contrib.auth import views as auth_views
 from django.db.models import Sum, F
 
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
+from collections import defaultdict
 
 
 class Login(forms.Form):
@@ -96,5 +97,24 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = Order.objects.exclude(status='completed').annotate(total_price=Sum(
-        F('items__price')*F('items__quantity')))
+        F('items__price')*F('items__quantity'))).prefetch_related('items__product')
+
+    menu_items = RestaurantMenuItem.objects.filter(
+        availability=True).select_related('restaurant')
+
+    restaurnant_products = {}
+    for item in menu_items:
+        if item.restaurant.id not in restaurnant_products:
+            restaurnant_products[item.restaurant.id] = set()
+        restaurnant_products[item.restaurant.id].add(item.product_id)
+
+    for order in orders:
+        order_products = set(order.items.values_list('product_id', flat=True))
+        available_restaurants = []
+
+        for restaurant_id, products in restaurnant_products.items():
+            if order_products.issubset(products):
+                restaurant = Restaurant.objects.get(id=restaurant_id)
+                available_restaurants.append(restaurant)
+        order.available_restaurants = available_restaurants
     return render(request, template_name='order_items.html', context={'orders': orders})
