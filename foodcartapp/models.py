@@ -131,6 +131,19 @@ class Order(models.Model):
     phonenumber = PhoneNumberField('Телефон', region='RU', db_index=True)
     address = models.CharField('Адрес', max_length=200)
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices={
+            'created': 'Принят',
+            'confirmed': 'Подтвержден',
+            'cooking': 'Готовится',
+            'delivering': 'В доставке',
+            'completed': 'Выполнен',
+        },
+        default='created',
+        db_index=True,
+        verbose_name='Статус'
+    )
 
     class Meta:
         verbose_name = 'Заказ'

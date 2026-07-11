@@ -115,10 +115,11 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'firstname', 'lastname',
+    list_display = ['id', 'status', 'firstname', 'lastname',
                     'phonenumber', 'address', 'created_at']
-    list_filter = ['created_at']
+    list_filter = ['created_at', 'status']
     search_fields = ['firstname', 'lastname', 'phonenumber']
+    fields = ['status', 'firstname', 'lastname', 'phonenumber', 'address']
     inlines = [OrderItemInline]
 
     def response_change(self, request, obj):
