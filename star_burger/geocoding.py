@@ -1,9 +1,17 @@
 import os
 import requests
 from geopy.distance import geodesic
+from places.models import Place
 
 
 def fetch_coordinates(address, apikey=None):
+    try:
+        place = Place.objects.get(address=address)
+        if place.latitude and place.longitude:
+            return place.longitude, place.latitude
+    except Place.DoesNotExist:
+        pass
+
     if apikey is None:
         apikey = os.getenv('YANDEX_GEOCODER_API_KEY')
 
@@ -22,10 +30,21 @@ def fetch_coordinates(address, apikey=None):
     )['response']['GeoObjectCollection']['featureMember']
 
     if not found_places:
+        Place.objects.get_or_create(address=address, defaults={
+                                    'latitude': None, 'longitude': None})
         return None
 
     most_relevant = found_places[0]
     lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
+
+    Place.objects.update_or_create(
+        address=address,
+        defaults={
+            'latitude': float(lat),
+            'longitude': float(lon)
+        }
+    )
+
     return lon, lat
 
 
