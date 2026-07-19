@@ -143,7 +143,6 @@ class Order(models.Model):
             'card': 'Онлайн',
         },
         verbose_name='Способ оплаты',
-        default='card',
         db_index=True
     )
     status = models.CharField(
