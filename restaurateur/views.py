@@ -126,10 +126,10 @@ def view_orders(request):
             if order_products.issubset(products):
                 restaurant = Restaurant.objects.get(id=restaurant_id)
 
-                if order_coords and restaurant.latitude and restaurant.longitude:
+                if order_coords and restaurant.place and restaurant.place.latitude and restaurant.place.longitude:
                     restaurant_coords = (
-                        float(restaurant.longitude),
-                        float(restaurant.latitude)
+                        float(restaurant.place.longitude),
+                        float(restaurant.place.latitude)
                     )
                     distance = calculate_distance(
                         order_coords, restaurant_coords)

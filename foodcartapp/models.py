@@ -20,11 +20,8 @@ class Restaurant(models.Model):
         max_length=50,
         blank=True,
     )
-    latitude = models.DecimalField(
-        'Широта', max_digits=9, decimal_places=6, null=True, blank=True)
-
-    longitude = models.DecimalField(
-        'Долгота', max_digits=9, decimal_places=6, null=True, blank=True)
+    place = models.OneToOneField('places.Place', on_delete=models.SET_NULL, null=True, blank=True,
+                                 verbose_name='местоположение', help_text='Связь с моделью Place для хранения координат')
 
     class Meta:
         verbose_name = 'ресторан'
