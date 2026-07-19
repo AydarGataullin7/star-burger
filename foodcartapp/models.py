@@ -148,7 +148,7 @@ class Order(models.Model):
     status = models.CharField(
         max_length=20,
         choices={
-            'created': 'Принят',
+            'created': 'Необработанный',
             'confirmed': 'Подтвержден',
             'cooking': 'Готовится',
             'delivering': 'В доставке',
