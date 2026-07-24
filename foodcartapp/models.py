@@ -134,8 +134,10 @@ class Order(models.Model):
     phonenumber = PhoneNumberField('Телефон', region='RU', db_index=True)
     address = models.CharField('Адрес', max_length=200)
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
-    called_at = models.DateTimeField('Дата звонка', blank=True, null=True)
-    delivered_at = models.DateTimeField('Дата доставки', blank=True, null=True)
+    called_at = models.DateTimeField(
+        'Дата звонка', blank=True, null=True, db_index=True)
+    delivered_at = models.DateTimeField(
+        'Дата доставки', blank=True, null=True, db_index=True)
     pay_choice = models.CharField(
         max_length=20,
         choices={
