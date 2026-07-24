@@ -165,7 +165,8 @@ class Order(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name='Ресторан'
+        verbose_name='Ресторан',
+        related_name='orders'
     )
 
     class Meta:
