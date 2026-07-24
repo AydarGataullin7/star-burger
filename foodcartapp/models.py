@@ -159,7 +159,7 @@ class Order(models.Model):
         verbose_name='Статус'
     )
 
-    comment = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True)
     restaurant = models.ForeignKey(
         'Restaurant',
         on_delete=models.SET_NULL,
