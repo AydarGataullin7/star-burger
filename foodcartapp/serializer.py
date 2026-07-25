@@ -27,6 +27,12 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         products_data = validated_data.pop('products')
         order = Order.objects.create(**validated_data)
-        for item_data in products_data:
-            OrderItem.objects.create(order=order, **item_data)
+
+        # Создаем все позиции заказа одним запросом
+        order_items = [
+            OrderItem(order=order, **item_data)
+            for item_data in products_data
+        ]
+        OrderItem.objects.bulk_create(order_items)
+
         return order
