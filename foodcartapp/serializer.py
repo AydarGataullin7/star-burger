@@ -1,3 +1,4 @@
+import re
 from rest_framework import serializers
 from .models import Order, OrderItem, Product
 
@@ -18,7 +19,6 @@ class OrderSerializer(serializers.ModelSerializer):
                   'phonenumber', 'address', 'products']
 
     def validate_phonenumber(self, value):
-        import re
         if not re.match(r'^\+7[0-9]{10}$', value):
             raise serializers.ValidationError(
                 "Введен некорректный номер телефона.")
