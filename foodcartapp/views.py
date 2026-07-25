@@ -1,6 +1,5 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Product
@@ -62,7 +61,6 @@ def product_list_api(request):
 
 @transaction.atomic
 @api_view(['POST'])
-@csrf_exempt
 def register_order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
