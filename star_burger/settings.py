@@ -135,3 +135,25 @@ REST_FRAMEWORK = {
 }
 
 YANDEX_GEOCODER_API_KEY = os.getenv('YANDEX_GEOCODER_API_KEY')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'level': 'ERROR',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'ERROR',
+        },
+    },
+}

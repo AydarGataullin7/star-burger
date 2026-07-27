@@ -1,8 +1,11 @@
 import os
+import logging
 import requests
 from geopy.distance import geodesic
 from places.models import Place
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_coordinates(address, apikey=None):
@@ -77,6 +80,6 @@ def get_coordinates_for_addresses(addresses):
                 lon, lat = coords
                 coords_map[address] = (float(lon), float(lat))
         except (requests.exceptions.RequestException, ValueError) as e:
-            print(f"Ошибка получения координат для '{address}': {e}")
+            logger.error(f"Ошибка получения координат для '{address}': {e}")
             coords_map[address] = None
     return coords_map
