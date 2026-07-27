@@ -2,6 +2,7 @@ import os
 import requests
 from geopy.distance import geodesic
 from places.models import Place
+from django.conf import settings
 
 
 def fetch_coordinates(address, apikey=None):
@@ -13,7 +14,7 @@ def fetch_coordinates(address, apikey=None):
         pass
 
     if apikey is None:
-        apikey = os.getenv('YANDEX_GEOCODER_API_KEY')
+        apikey = settings.YANDEX_GEOCODER_API_KEY
 
     if not apikey:
         raise ValueError("YANDEX_GEOCODER_API_KEY is required")
