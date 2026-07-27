@@ -76,7 +76,7 @@ def get_coordinates_for_addresses(addresses):
             if coords:
                 lon, lat = coords
                 coords_map[address] = (float(lon), float(lat))
-        except Exception as e:
+        except (requests.exceptions.RequestException, ValueError) as e:
             print(f"Ошибка получения координат для '{address}': {e}")
             coords_map[address] = None
     return coords_map
