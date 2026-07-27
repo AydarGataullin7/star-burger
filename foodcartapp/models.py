@@ -3,6 +3,15 @@ from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinValueValidator
 from django.utils import timezone
+from django.db.models import Sum, F
+
+
+class OrderQuerySet(models.QuerySet):
+    def with_total_price(self):
+        return self.annotate(total_price=Sum(F('item__price') * F('items__quantity')))
+
+    def active(self):
+        return self.exclude(status='completed')
 
 
 class Restaurant(models.Model):
@@ -170,6 +179,7 @@ class Order(models.Model):
         verbose_name='Ресторан',
         related_name='orders'
     )
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Заказ'

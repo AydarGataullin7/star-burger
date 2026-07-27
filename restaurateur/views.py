@@ -8,8 +8,6 @@ from star_burger.geocoding import fetch_coordinates, calculate_distance
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.db.models import Sum, F
-
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 from collections import defaultdict
@@ -98,14 +96,10 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.exclude(status='completed').annotate(
-        total_price=Sum(F('items__price')*F('items__quantity'))
-    ).prefetch_related('items__product')
+    orders = Order.objects.active().with_total_price().prefetch_related('items__product')
 
     menu_items = RestaurantMenuItem.objects.filter(
-        availability=True
-    ).select_related('restaurant')
-
+        availability=True).select_related('restaurant')
     restaurant_products = {}
     for item in menu_items:
         if item.restaurant.id not in restaurant_products:
