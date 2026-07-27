@@ -56,3 +56,26 @@ def calculate_distance(coords1, coords2):
     point2 = (float(coords2[1]), float(coords2[0]))
 
     return geodesic(point1, point2).km
+
+
+def get_coordinates_for_addresses(addresses):
+    unique_addresses = set(addresses)
+    existing_places = Place.objects.filter(address__in=unique_addresses)
+    coords_map = {}
+    addresses_to_fetch = set(unique_addresses)
+    for place in existing_places:
+        if place.latitude and place.longitude:
+            coords_map[place.address] = (
+                float(place.longitude), float(place.latitude))
+            addresses_to_fetch.discard(place.address)
+
+    for address in addresses_to_fetch:
+        try:
+            coords = fetch_coordinates(address)
+            if coords:
+                lon, lat = coords
+                coords_map[address] = (float(lon), float(lat))
+        except Exception as e:
+            print(f"Ошибка получения координат для '{address}': {e}")
+            coords_map[address] = None
+    return coords_map
