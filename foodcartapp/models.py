@@ -4,6 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from django.db.models import Sum, F
+from collections import defaultdict
 
 
 class OrderQuerySet(models.QuerySet):
@@ -12,6 +13,27 @@ class OrderQuerySet(models.QuerySet):
 
     def active(self):
         return self.exclude(status='completed')
+
+    def with_available_restaurants(self):
+        orders = self.prefetch_related('items__product')
+        menu_items = RestaurantMenuItem.objects.filter(
+            availability=True).select_related('restaurant', 'product')
+        restaurant_products = defaultdict(set)
+        for item in menu_items:
+            restaurant_products[item.restaurant].add(item.product_id)
+        for order in orders:
+            order_product_ids = set(
+                order.items.values_list('product_id', flat=True))
+
+            available = []
+            for restaurant, products in restaurant_products.items():
+                if order_product_ids.issubset(products):
+                    available.append(restaurant)
+
+            available.sort(key=lambda r: r.name)
+
+            order.available_restaurants = available
+        return orders
 
 
 class Restaurant(models.Model):

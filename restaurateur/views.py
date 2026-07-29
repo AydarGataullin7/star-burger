@@ -96,46 +96,29 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.active().with_total_price().prefetch_related('items__product')
+    orders = (Order.objects
+              .active()
+              .with_total_price()
+              .prefetch_related('items__product')
+              .with_available_restaurants())
+
     all_addresses = []
     for order in orders:
         all_addresses.append(order.address)
     for restaurant in Restaurant.objects.all():
         all_addresses.append(restaurant.address)
-    coords_map = get_coordinates_for_addresses(all_addresses)
-    menu_items = RestaurantMenuItem.objects.filter(
-        availability=True
-    ).select_related('restaurant')
 
-    restaurant_products = {}
-    for item in menu_items:
-        if item.restaurant.id not in restaurant_products:
-            restaurant_products[item.restaurant.id] = set()
-        restaurant_products[item.restaurant.id].add(item.product_id)
+    coords_map = get_coordinates_for_addresses(all_addresses)
+
     for order in orders:
-        order_products = set(order.items.values_list('product_id', flat=True))
         order_coords = coords_map.get(order.address)
 
-        available_restaurants = []
-        for restaurant_id, products in restaurant_products.items():
-            if order_products.issubset(products):
-                restaurant = Restaurant.objects.get(id=restaurant_id)
-                restaurant_coords = coords_map.get(restaurant.address)
-
-                if order_coords and restaurant_coords:
-                    distance = calculate_distance(
-                        order_coords, restaurant_coords)
-                    restaurant.distance_from_order = distance
-                else:
-                    restaurant.distance_from_order = None
-
-                available_restaurants.append(restaurant)
-
-        available_restaurants.sort(
-            key=lambda r: r.distance_from_order if r.distance_from_order is not None else float(
-                'inf')
-        )
-
-        order.available_restaurants = available_restaurants
+        for restaurant in order.available_restaurants:
+            restaurant_coords = coords_map.get(restaurant.address)
+            if order_coords and restaurant_coords:
+                restaurant.distance_from_order = calculate_distance(
+                    order_coords, restaurant_coords)
+            else:
+                restaurant.distance_from_order = None
 
     return render(request, template_name='order_items.html', context={'orders': orders})
