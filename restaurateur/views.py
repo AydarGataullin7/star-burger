@@ -4,7 +4,7 @@ from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
-from star_burger.geocoding import fetch_coordinates, calculate_distance, get_coordinates_for_addresses
+from places.geocoding import fetch_coordinates, calculate_distance, get_coordinates_for_addresses
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
