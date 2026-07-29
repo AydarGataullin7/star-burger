@@ -34,16 +34,20 @@
         {% if item.restaurant %}
           {{ item.restaurant.name }}
         {% else %}
-          <details>
-            <summary>Доступно: {{ item.available_restaurants|length }}</summary>
-            <ul>
-              {% for restaurant in item.available_restaurants %}
-                <li>{{ restaurant.name }} ({{ restaurant.distance_from_order|floatformat:1 }} км)</li>
-              {% empty %}
-                <li>Нет доступных ресторанов</li>
-              {% endfor %}
-            </ul>
-          </details>
+          {% if not item.address_coords %}
+            <span style="color: red; font-weight: bold;">Адрес не найден</span>
+          {% else %}
+            <details>
+              <summary>Доступно: {{ item.available_restaurants|length }}</summary>
+              <ul>
+                {% for restaurant in item.available_restaurants %}
+                  <li>{{ restaurant.name }} ({{ restaurant.distance_from_order|floatformat:1 }} км)</li>
+                {% empty %}
+                  <li>Нет доступных ресторанов</li>
+                {% endfor %}
+              </ul>
+            </details>
+          {% endif %}
         {% endif %}
       </td>
       <td>{{ item.comment|default_if_none:"-" }}</td>
