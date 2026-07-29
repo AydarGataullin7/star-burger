@@ -8,7 +8,7 @@ from django.db.models import Sum, F
 
 class OrderQuerySet(models.QuerySet):
     def with_total_price(self):
-        return self.annotate(total_price=Sum(F('item__price') * F('items__quantity')))
+        return self.annotate(total_price=Sum(F('items__price') * F('items__quantity')))
 
     def active(self):
         return self.exclude(status='completed')
