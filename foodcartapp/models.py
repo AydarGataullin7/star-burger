@@ -16,23 +16,26 @@ class OrderQuerySet(models.QuerySet):
 
     def with_available_restaurants(self):
         orders = self.prefetch_related('items__product')
+
         menu_items = RestaurantMenuItem.objects.filter(
-            availability=True).select_related('restaurant', 'product')
+            availability=True
+        ).select_related('restaurant', 'product')
+
         restaurant_products = defaultdict(set)
         for item in menu_items:
-            restaurant_products[item.restaurant].add(item.product_id)
+            restaurant_products[item.restaurant].add(item.product)
+
         for order in orders:
-            order_product_ids = set(
-                order.items.values_list('product_id', flat=True))
+            order_products = set(order.items.all())
 
             available = []
             for restaurant, products in restaurant_products.items():
-                if order_product_ids.issubset(products):
+                if order_products.issubset(products):
                     available.append(restaurant)
 
             available.sort(key=lambda r: r.name)
-
             order.available_restaurants = available
+
         return orders
 
 
