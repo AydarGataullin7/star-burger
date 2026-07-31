@@ -49,8 +49,6 @@ class ProductAdmin(admin.ModelAdmin):
         'category',
     ]
     search_fields = [
-        # FIXME SQLite can not convert letter case for cyrillic words properly, so search will be buggy.
-        # Migration to PostgreSQL is necessary
         'name',
         'category__name',
     ]
@@ -105,8 +103,15 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductCategory)
-class ProductAdmin(admin.ModelAdmin):
+class ProductCategoryAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(RestaurantMenuItem)
+class RestaurantMenuItemAdmin(admin.ModelAdmin):
+    list_display = ['restaurant', 'product', 'availability']
+    list_filter = ['availability', 'restaurant']
+    search_fields = ['restaurant__name', 'product__name']
 
 
 class OrderItemInline(admin.TabularInline):

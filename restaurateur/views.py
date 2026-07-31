@@ -112,6 +112,7 @@ def view_orders(request):
 
     for order in orders:
         order_coords = coords_map.get(order.address)
+        order.address_coords = order_coords is not None
 
         for restaurant in order.available_restaurants:
             restaurant_coords = coords_map.get(restaurant.address)

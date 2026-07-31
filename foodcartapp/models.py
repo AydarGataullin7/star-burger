@@ -23,14 +23,15 @@ class OrderQuerySet(models.QuerySet):
 
         restaurant_products = defaultdict(set)
         for item in menu_items:
-            restaurant_products[item.restaurant].add(item.product)
+            restaurant_products[item.restaurant].add(item.product_id)
 
         for order in orders:
-            order_products = set(order.items.all())
+            order_product_ids = set(order.items.values_list(
+                'product_id', flat=True))
 
             available = []
             for restaurant, products in restaurant_products.items():
-                if order_products.issubset(products):
+                if order_product_ids.issubset(products):
                     available.append(restaurant)
 
             available.sort(key=lambda r: r.name)
