@@ -9,13 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 def fetch_coordinates(address, apikey=None):
-    try:
-        place = Place.objects.get(address=address)
-        if place.latitude and place.longitude:
-            return place.longitude, place.latitude
-    except Place.DoesNotExist:
-        pass
-
     if apikey is None:
         apikey = settings.YANDEX_GEOCODER_API_KEY
 
