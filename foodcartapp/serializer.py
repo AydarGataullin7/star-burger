@@ -4,9 +4,15 @@ from .models import Order, OrderItem, Product
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    price = serializers.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        required=False  # ✅ ДОБАВИТЬ
+    )
+
     class Meta:
         model = OrderItem
-        fields = ['product', 'quantity']
+        fields = ['product', 'quantity', 'price']
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -32,10 +38,17 @@ class OrderSerializer(serializers.ModelSerializer):
                 'Заказ должен содержать хотябы один товар')
         order = Order.objects.create(**validated_data)
 
-        order_items = [
-            OrderItem(order=order, **item_data)
-            for item_data in products_data
-        ]
+        order_items = []
+        for item_data in products_data:
+            product = item_data['product']
+            price = product.price
+            order_items.append(OrderItem(
+                order=order,
+                product=product,
+                quantity=item_data['quantity'],
+                price=price
+            ))
+
         OrderItem.objects.bulk_create(order_items)
 
         return order
