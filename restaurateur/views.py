@@ -99,7 +99,7 @@ def view_orders(request):
     orders = (Order.objects
               .active()
               .with_total_price()
-              .prefetch_related('items__product')
+              .prefetch_related('items__product', 'restaurant')
               .with_available_restaurants())
 
     all_addresses = []
