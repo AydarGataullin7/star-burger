@@ -1,0 +1,21 @@
+[0;1;32m●[0m star-burger.service - Star Burger Django Application
+     Loaded: loaded (/etc/systemd/system/star-burger.service; enabled; vendor preset: enabled)
+     Active: [0;1;32mactive (running)[0m since Tue 2026-08-04 15:35:11 UTC; 3s ago
+   Main PID: 1784 (gunicorn)
+      Tasks: 5 (limit: 1050)
+     Memory: 72.4M
+        CPU: 1.346s
+     CGroup: /system.slice/star-burger.service
+             ├─1784 /root/star-burger/venv/bin/python3 /root/star-burger/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:80 star_burger.wsgi
+             ├─1788 /root/star-burger/venv/bin/python3 /root/star-burger/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:80 star_burger.wsgi
+             ├─1789 /root/star-burger/venv/bin/python3 /root/star-burger/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:80 star_burger.wsgi
+             └─1790 /root/star-burger/venv/bin/python3 /root/star-burger/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:80 star_burger.wsgi
+
+Aug 04 15:35:11 tg-bot systemd[1]: Started Star Burger Django Application.
+Aug 04 15:35:12 tg-bot gunicorn[1784]: [2026-08-04 15:35:12 +0000] [1784] [INFO] Starting gunicorn 26.0.0
+Aug 04 15:35:12 tg-bot gunicorn[1784]: [2026-08-04 15:35:12 +0000] [1784] [INFO] Listening at: http://0.0.0.0:80 (1784)
+Aug 04 15:35:12 tg-bot gunicorn[1784]: [2026-08-04 15:35:12 +0000] [1784] [INFO] Using worker: sync
+Aug 04 15:35:12 tg-bot gunicorn[1788]: [2026-08-04 15:35:12 +0000] [1788] [INFO] Booting worker with pid: 1788
+Aug 04 15:35:12 tg-bot gunicorn[1789]: [2026-08-04 15:35:12 +0000] [1789] [INFO] Booting worker with pid: 1789
+Aug 04 15:35:12 tg-bot gunicorn[1790]: [2026-08-04 15:35:12 +0000] [1790] [INFO] Booting worker with pid: 1790
+Aug 04 15:35:12 tg-bot gunicorn[1784]: [2026-08-04 15:35:12 +0000] [1784] [INFO] Control socket listening at /root/.gunicorn/gunicorn.ctl
