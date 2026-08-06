@@ -68,6 +68,7 @@ SECRET_KEY=django-insecure-0if40nf4nf93n4
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1,localhost
 YANDEX_GEOCODER_API_KEY=ваш-ключ-яндекса
+DATABASE_URL=postgres://star_burger_user:123@localhost:5432/star_burger_db
 ```
 
 **Где взять ключи:**
@@ -77,12 +78,16 @@ YANDEX_GEOCODER_API_KEY=ваш-ключ-яндекса
 
 ### Настройка базы данных
 
-Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
-
-```sh
-python manage.py migrate
-```
-
+ Сайт использует PostgreSQL. Инструкция по установке:
+ 1. Установите PostgreSQL: apt install postgresql postgresql-contrib -y
+ 2. Создайте пользователя и базу данных:
+    sudo -u postgres psql
+    CREATE USER star_burger_user WITH PASSWORD 'ваш_пароль';
+    CREATE DATABASE star_burger_db OWNER star_burger_user;
+    \q
+ 3. Укажите DATABASE_URL в .env
+ 4. Выполните миграции:
+`python manage.py migrate`
 ### Заполнение координат ресторанов
 
 Для работы геокодера нужно заполнить координаты ресторанов:
