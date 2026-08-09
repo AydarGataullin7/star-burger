@@ -218,6 +218,10 @@ Parcel будет следить за файлами в каталоге `bundle
 - Настройте `ALLOWED_HOSTS` с вашим доменом или IP-адресом
 - Для работы геокодера обязательно укажите `YANDEX_GEOCODER_API_KEY`
 
+## Ссылка на сайт
+
+Сайт доступен по адресу: [https://pythonlab.tech](https://pythonlab.tech)
+
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).
