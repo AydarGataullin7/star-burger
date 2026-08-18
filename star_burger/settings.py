@@ -20,14 +20,7 @@ env = Env()
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', True)
-ALLOWED_HOSTS = [
-    '77.105.168.40',
-    'tg-bot',
-    'localhost',
-    '127.0.0.1',
-    'pythonlab.tech',
-    'www.pythonlab.tech',
-]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 INSTALLED_APPS = [
     'foodcartapp.apps.FoodcartappConfig',
     'restaurateur.apps.RestaurateurConfig',
