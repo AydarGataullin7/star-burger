@@ -167,7 +167,7 @@ LOGGING = {
 }
 
 ROLLBAR = {
-    'access_token': ROLLBAR_ACCESS_TOKEN,
-    'environment': 'development' if DEBUG else 'production',
+    'access_token': ROLLBAR_ACCESS_TOKEN or 'DUMMY_TOKEN_FOR_DEV',
+    'environment': os.getenv('ROLLBAR_ENVIRONMENT', 'production'),
     'root': BASE_DIR,
 }
