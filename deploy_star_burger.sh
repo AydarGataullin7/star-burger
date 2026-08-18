@@ -18,7 +18,7 @@ echo "Installing Node.js dependencies..."
 npm install
 
 echo "Building frontend..."
-./node_modules/.bin/parcel build bundle-src/index.js --dist-dir bundles --public-url="./"CC
+./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
