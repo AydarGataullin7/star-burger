@@ -10,16 +10,16 @@ echo "--- 1. Pulling latest code from GitHub ---"
 git pull
 
 echo "--- 2. Stopping old containers ---"
-docker compose down
+docker compose -f docker-compose.yaml down
 
 echo "--- 3. Building and starting new containers ---"
-docker compose up -d --build
+docker compose -f docker-compose.yaml up -d --build
 
 echo "--- 4. Applying database migrations ---"
-docker compose exec -T backend python manage.py migrate
+docker compose -f docker-compose.yaml exec -T backend python manage.py migrate
 
 echo "--- 5. Collecting static files ---"
-docker compose exec -T backend python manage.py collectstatic --noinput
+docker compose -f docker-compose.yaml exec -T backend python manage.py collectstatic --noinput
 
 echo "--- 6. Notifying Rollbar about deployment ---"
 COMMIT_HASH=$(git rev-parse HEAD)

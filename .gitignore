@@ -143,3 +143,7 @@ cython_debug/
 
 .parcel-cache/
 .env
+
+# Local dev-only file (не коммитить)
+docker-compose.override.yaml
+staticfiles/
