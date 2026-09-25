@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Django
+*.log
+db.sqlite3
+staticfiles/
+bundles/
+
+# Media (не должна попадать в образ)
+media/
+
+# Окружения
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Прочее
+data_all.json
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yaml
+README.md

@@ -1,0 +1,19 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci
+
+COPY bundles-src ./bundles-src
+
+RUN ls -la ./node_modules/.bin/
+
+RUN ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
+
+FROM nginx:alpine
+
+COPY --from=builder /app/bundles /usr/share/nginx/html/bundles
+
+EXPOSE 80

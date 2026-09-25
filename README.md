@@ -11,6 +11,92 @@
 Второй интерфейс предназначен для менеджера. Здесь происходит обработка заказов. Менеджер видит поступившие новые заказы и первым делом созванивается с клиентом, чтобы подтвердить заказ. После оператор выбирает ближайший ресторан и передаёт туда заказ на исполнение. Там всё приготовят и сами доставят еду клиенту.
 
 Третий интерфейс — это админка. Преимущественно им пользуются программисты при разработке сайта. Также сюда заходит менеджер, чтобы обновить меню ресторанов Star Burger.
+## 🐳 Быстрый запуск через Docker (рекомендуется)
+
+Самый простой способ запустить проект — использовать Docker. Нужен только **Docker Desktop** (Windows/macOS) или **Docker Engine** (Linux).
+
+### Требования
+
+- **Docker 20.10+**
+- **Docker Compose 2.0+**
+- **Git**
+
+Проверить установку:
+```bash
+docker --version
+docker compose version
+```
+### Установка и запуск
+
+1. Склонируйте репозиторий:
+```bash
+git clone https://github.com/AydarGataullin7/star-burger.git
+cd star-burger
+```
+2. Создайте файл `.env` из образца:
+```bash
+cp .env.example .env
+```
+Откройте `.env` и заполните:
+- `SECRET_KEY` — сгенерируйте случайную строку (например, на https://djecrety.ir/)
+- `YANDEX_GEOCODER_API_KEY` — получите в [кабинете Яндекс.API](https://developer.tech.yandex.ru/)
+- `ROLLBAR_ACCESS_TOKEN` — получите на [rollbar.com](https://rollbar.com/) или оставьте заглушку
+
+3. Запустите проект:
+```bash
+docker compose up -d
+```
+Первый запуск займёт 2-3 минуты (скачаются образы, соберутся контейнеры).
+
+4. Примените миграции:
+```bash
+docker compose exec backend python manage.py migrate
+```
+5. Создайте суперпользователя для админки:
+```bash
+docker compose exec backend python manage.py createsuperuser
+```
+6. Откройте сайт: **http://localhost**
+
+    Админка: **http://localhost/admin/**
+
+### Полезные команды
+
+Загрузить демо-данные:
+```bash
+docker compose exec backend python manage.py loaddata data_all.json --exclude contenttypes --exclude auth.permission --exclude admin.logentry --exclude sessions.session
+```
+Посмотреть логи:
+```bash
+docker compose logs backend
+docker compose logs nginx
+```
+Остановить проект:
+```bash
+docker compose down
+```
+Перезапустить после изменения зависимостей (`requirements.txt`, `package.json`):
+```bash
+docker compose up -d --build
+```
+Удалить всё, включая базу данных:
+```bash
+docker compose down -v
+```
+### Как это устроено
+
+- **backend** — Django + gunicorn (в dev-режиме — `runserver`)
+- **frontend** — Nginx + собранные Parcel бандлы
+- **db** — PostgreSQL 15
+- **nginx** — reverse-proxy: раздаёт статику, медиа и проксирует запросы на backend
+
+Код проекта монтируется как volume — правки видны сразу, без пересборки. `runserver` автоматически перезапускается при изменениях.
+
+Файлы `media/` хранятся в отдельном томе и **не теряются** при перезапуске контейнеров.
+
+## Как запустить dev-версию сайта без Docker
+
+> Если вы хотите запустить проект **без Docker** (например, для отладки в IDE) — используйте инструкции ниже.
 
 ## Как запустить dev-версию сайта
 
@@ -219,6 +305,7 @@ Parcel будет следить за файлами в каталоге `bundle
 - Для работы геокодера обязательно укажите `YANDEX_GEOCODER_API_KEY`
 
 ## Ссылка на сайт
+Локально: **http://localhost** (после `docker compose up -d`)
 
 Сайт доступен по адресу: [https://pythonlab.tech](https://pythonlab.tech)
 
