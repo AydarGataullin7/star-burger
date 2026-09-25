@@ -317,5 +317,77 @@ Parcel будет следить за файлами в каталоге `bundle
 
 - Второй и третий урок [учебного курса Django](https://dvmn.org/modules/django/)
 
-## Деплой
-Тестируем отправку уведомления в Rollbar
+## Деплой на сервер
+
+Деплой выполняется **автоматически** через скрипт `deploy_star_burger.sh`.
+
+### Что делает скрипт
+
+1. `git pull` — забирает свежий код из GitHub.
+2. `docker compose down` — останавливает старые контейнеры (тома сохраняются).
+3. `docker compose up -d --build` — пересобирает и запускает контейнеры.
+4. `migrate` — применяет миграции БД.
+5. `collectstatic` — собирает статику Django.
+6. Уведомляет Rollbar о деплое.
+
+### Как запустить деплой
+
+На сервере в папке проекта:
+
+```bash
+./deploy_star_burger.sh
+```
+### Первоначальная настройка сервера
+1. Установите Docker и Docker Compose:
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo apt install docker-compose-plugin -y
+```
+2. Склонируйте репозиторий в /root/star-burger:
+```bash
+cd /root
+git clone https://github.com/AydarGataullin7/star-burger.git
+cd star-burger
+```
+3. Создайте `.env` на основе .`env.example`:
+```bash
+cp .env.example .env
+nano .env
+```
+4. Обязательно заполните:
+
+`SECRET_KEY `— случайная строка.
+
+`DEBUG=False` — обязательно False в prod.
+
+`ALLOWED_HOSTS` — ваш домен или IP.
+
+`DATABASE_URL` — с реальным паролем БД.
+
+`YANDEX_GEOCODER_API_KEY` — реальный ключ.
+
+`ROLLBAR_ACCESS_TOKEN` — реальный токен Rollbar.
+
+5. Сделайте скрипт исполняемым:
+```bash
+chmod +x deploy_star_burger.sh
+```
+6. Запустите первый деплой:
+```bash
+./deploy_star_burger.sh
+```
+7. Примените миграции и создайте суперпользователя (только при первом деплое):
+```bash
+docker compose exec backend python manage.py migrate
+docker compose exec backend python manage.py createsuperuser
+```
+### Обновление кода на сервере
+После любых правок локально — запушьте в GitHub:
+```bash
+git push origin master
+```
+На сервере — выполните:
+```bash
+./deploy_star_burger.sh
+```
+Сайт обновится автоматически.
