@@ -34,7 +34,6 @@ media/
 *.swp
 
 # Прочее
-data_all.json
 Dockerfile*
 docker-compose*.yml
 docker-compose*.yaml
