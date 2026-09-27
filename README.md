@@ -305,9 +305,10 @@ Parcel будет следить за файлами в каталоге `bundle
 - Для работы геокодера обязательно укажите `YANDEX_GEOCODER_API_KEY`
 
 ## Ссылка на сайт
-Локально: **http://localhost** (после `docker compose up -d`)
 
-Сайт доступен по адресу: [https://pythonlab.tech](https://pythonlab.tech)
+- **Prod-версия:** [https://pythonlab.tech](https://pythonlab.tech)
+- **По IP:** http://194.87.27.126
+- **Локально:** http://localhost — после `docker compose up -d`
 
 ## Цели проекта
 
