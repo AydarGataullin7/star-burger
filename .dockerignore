@@ -17,11 +17,11 @@ npm-debug.log*
 # Django
 *.log
 db.sqlite3
-staticfiles/
-bundles/
+backend/staticfiles/
+backend/bundles/
 
 # Media (не должна попадать в образ)
-media/
+backend/media/
 
 # Окружения
 .env

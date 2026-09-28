@@ -85,14 +85,23 @@ docker compose down -v
 ```
 ### Как это устроено
 
-- **backend** — Django + gunicorn (в dev-режиме — `runserver`)
-- **frontend** — Nginx + собранные Parcel бандлы
-- **db** — PostgreSQL 15
-- **nginx** — reverse-proxy: раздаёт статику, медиа и проксирует запросы на backend
+Проект разделён на два независимых блока:
 
-Код проекта монтируется как volume — правки видны сразу, без пересборки. `runserver` автоматически перезапускается при изменениях.
+- **`backend/`** — Django + gunicorn (Python). Содержит `manage.py`, `star_burger/`, `foodcartapp/`, `places/`, `restaurateur/`, `templates/`, `requirements.txt`, `Dockerfile`.
+- **`frontend/`** — Node.js + Parcel (сборка) → Nginx (раздача). Содержит `package.json`, `bundles-src/`, `assets/`, `Dockerfile.frontend`.
 
-Файлы `media/` хранятся в отдельном томе и **не теряются** при перезапуске контейнеров.
+Плюс общая инфраструктура в корне:
+
+- **`nginx/`** — конфиг reverse-proxy (раздаёт `/static/`, `/media/`, проксирует остальное на backend).
+- **`docker-compose.yaml`** — описание всех сервисов: `db`, `backend`, `frontend`, `nginx`.
+- **`db`** — PostgreSQL 15.
+
+**Сервисы:**
+
+- **`backend`** — Django + gunicorn.
+- **`frontend`** — Nginx + собранные Parcel бандлы.
+- **`db`** — PostgreSQL 15.
+- **`nginx`** — reverse-proxy.
 
 ## Как запустить dev-версию сайта без Docker
 
